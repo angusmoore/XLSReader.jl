@@ -1,8 +1,14 @@
 # XLSReader.jl
 
+[![](https://img.shields.io/badge/docs-latest-blue.svg)](https://angusmoore.github.io/XLSReader.jl/dev/)
+![Lifecycle](https://img.shields.io/badge/lifecycle-experimental-orange.svg)
+![CI](https://github.com/angusmoore/XLSReader.jl/workflows/CI/badge.svg)
+[![codecov](https://codecov.io/gh/angusmoore/XLSReader.jl/branch/main/graph/badge.svg?token=UQIWOX2GBL)](https://codecov.io/gh/angusmoore/XLSReader.jl)
+
 Pure Julia copy of Python xlrd library for reading XLS (Excel 97-2003) files.
 
-WARNING: This is a quick vibe-coded copy of Python xlrd. Use at your own risk.
+> [!WARNING]
+> This is a quick vibe-coded copy of Python xlrd. Use at your own risk.
 
 # Quick start: reading a sheet into a DataFrame
 ```julia

@@ -1,0 +1,4 @@
+[deps]
+DataFrames = "a93c6f00-e57d-5684-b7b6-d8193f3e46c0"
+Documenter = "e30172f5-a6a5-5a46-863b-614d45cd2de4"
+XLSReader = "828e97a4-ee8d-4dea-aaac-4ac638b86d20"

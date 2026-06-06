@@ -1,13 +1,60 @@
 # Worksheet cell record parsing (BIFF8).
 # Reads NUMBER, LABELSST, LABEL, RK, MULRK, FORMULA, BOOLERR, BLANK records.
 
+"""
+    Cell
+
+A single cell value read from an XLS worksheet.
+
+Fields:
+- `type::Int` — cell type:
+  - `0` — empty (no data)
+  - `1` — text; `value` is a `String`
+  - `2` — number; `value` is a `Float64`
+  - `3` — date/time; `value` is a `Date` or `DateTime`
+  - `4` — boolean; `value` is a `Bool`
+  - `5` — error (e.g. `"#DIV/0!"`); `value` is a `String`
+  - `6` — blank (formatted but empty); `value` is `nothing`
+- `value` — the cell content typed according to `type`, or `nothing` for empty/blank cells
+
+# Example
+```julia
+wb = readxls("report.xls")
+cell = wb["Sheet1"][2, 3]
+cell.type == 2 && println(cell.value::Float64)
+```
+"""
 struct Cell
-    type::Int         # XL_CELL_* constant
-    value::Any        # String, Float64, Date, DateTime, Bool, or nothing
+    type::Int
+    value::Any
 end
 
 const EMPTY_CELL = Cell(XL_CELL_EMPTY, nothing)
 
+"""
+    Sheet
+
+A single worksheet within a [`Workbook`](@ref).
+
+Fields:
+- `name::String` — sheet name as it appears in the workbook
+- `nrows::Int` — number of rows containing data
+- `ncols::Int` — number of columns containing data
+- `cells::Dict{Tuple{Int,Int},Cell}` — sparse cell map keyed by `(row, col)` (1-based)
+
+Use `sheet[row, col]` to retrieve a [`Cell`](@ref). Positions outside the populated range
+return an empty cell (`type == 0`, `value === nothing`).
+
+# Example
+```julia
+wb = readxls("report.xls")
+sheet = wb["Summary"]
+for row in 1:sheet.nrows, col in 1:sheet.ncols
+    cell = sheet[row, col]
+    println(cell.value)
+end
+```
+"""
 mutable struct Sheet
     name::String
     nrows::Int
