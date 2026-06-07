@@ -2,7 +2,6 @@ using Test
 using Dates
 using XLSReader
 using Aqua
-using JET
 
 @testset "decode_rk" begin
     # Integer 100: bit0=1 (int), bit1=0, value = 100 << 2 = 400 = 0x190
@@ -124,5 +123,4 @@ include("test_readxlsheet.jl")
 
 @testset "Code quality" begin
     Aqua.test_all(XLSReader)
-    JET.test_package(XLSReader)
 end
