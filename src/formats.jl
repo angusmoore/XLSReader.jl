@@ -50,12 +50,11 @@ end
 # Bit 0: 0=float, 1=integer
 # Bit 1: 0=as-is, 1=divide by 100
 function decode_rk(rk_bytes::AbstractVector{UInt8})
-    rk = Int32(
-        UInt32(rk_bytes[1]) |
+    u = UInt32(rk_bytes[1]) |
         (UInt32(rk_bytes[2]) << 8) |
         (UInt32(rk_bytes[3]) << 16) |
-        (UInt32(rk_bytes[4]) << 24),
-    )
+        (UInt32(rk_bytes[4]) << 24)
+    rk = reinterpret(Int32, u)
     mul100 = (rk & 2) != 0
     is_int = (rk & 1) != 0
     if is_int

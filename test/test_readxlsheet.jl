@@ -3,6 +3,7 @@ using DataFrames
 using XLSReader
 
 const TESTDATA = joinpath(@__DIR__, "testdata", "f11hist-1969-2009.xls")
+const FORECAST_TESTDATA = joinpath(@__DIR__, "testdata", "forecast-date-by-event-date.xls")
 
 @testset "readxlsheet" begin
     df = readxlsheet(TESTDATA, "Data"; skip = 10)
@@ -24,4 +25,25 @@ const TESTDATA = joinpath(@__DIR__, "testdata", "f11hist-1969-2009.xls")
 
     @test_throws ErrorException readxlsheet(TESTDATA, 99)
     @test_throws ErrorException readxlsheet(TESTDATA, "NoSuchSheet")
+end
+
+@testset "readxlsheet forecast-date-by-event-date.xls" begin
+    # Notes sheet: 23 rows (row 1 = header "Data Collection"), 3 cols
+    df_notes = readxlsheet(FORECAST_TESTDATA, "Notes")
+    @test df_notes isa DataFrame
+    @test nrow(df_notes) == 22
+    @test ncol(df_notes) == 3
+    @test names(df_notes)[1] == "Data Collection"
+
+    # GDP sheet: 159 rows (row 1 = header), 141 cols
+    df_gdp = readxlsheet(FORECAST_TESTDATA, "GDP - 1 quarter change")
+    @test df_gdp isa DataFrame
+    @test nrow(df_gdp) == 158
+    @test ncol(df_gdp) == 141
+
+    # Index-based access for GDP sheet (sheet 2)
+    df_by_index = readxlsheet(FORECAST_TESTDATA, 2)
+    @test df_by_index isa DataFrame
+    @test nrow(df_by_index) == nrow(df_gdp)
+    @test ncol(df_by_index) == ncol(df_gdp)
 end

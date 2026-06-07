@@ -10,7 +10,9 @@ include("strings.jl")
 include("workbook.jl")
 include("sheet.jl")
 
-export readxls, readxlsheet, Workbook, Sheet, Cell
+export readxls, readxlsheet, Workbook, Sheet, Cell,
+    XL_CELL_EMPTY, XL_CELL_TEXT, XL_CELL_NUMBER, XL_CELL_DATE,
+    XL_CELL_BOOLEAN, XL_CELL_ERROR, XL_CELL_BLANK
 
 """
     Workbook
