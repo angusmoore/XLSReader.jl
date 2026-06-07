@@ -1,7 +1,7 @@
 name = "XLSReader"
 uuid = "828e97a4-ee8d-4dea-aaac-4ac638b86d20"
 version = "0.1.0"
-authors = ["Angus Moore <18376371+angusmoore@users.noreply.github.com>"]
+authors = ["Angus Moore <18376371+angusmoore@users.noreply.github.com>", "xlrd contributors"]
 
 [deps]
 DataFrames = "a93c6f00-e57d-5684-b7b6-d8193f3e46c0"
