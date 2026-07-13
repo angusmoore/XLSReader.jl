@@ -40,10 +40,11 @@ end
     @test df_gdp isa DataFrame
     @test nrow(df_gdp) == 158
     @test ncol(df_gdp) == 141
+    # Row numbers are minus 1 relative to the spreadsheet b/c of headers
     @test df_gdp[7,2] ≈ 0.90 rtol = 1e-6    
-    @test df_gdp[15,2] ≈ 1.00 rtol = 1e-6    
-    @test df_gdp[17,12] ≈ 0.90 rtol = 1e-6    
-    @test df_gdp[27,12] ≈ 0.80 rtol = 1e-6    
+    @test df_gdp[14,2] ≈ 1.00 rtol = 1e-6    
+    @test df_gdp[16,12] ≈ 0.90 rtol = 1e-6    
+    @test df_gdp[26,12] ≈ 0.80 rtol = 1e-6    
 
     # Index-based access for GDP sheet (sheet 2)
     df_by_index = readxlsheet(FORECAST_TESTDATA, 2)
