@@ -4,19 +4,8 @@ using XLSReader
 using Aqua
 
 @testset "decode_rk" begin
-    # Integer 100: bit0=1 (int), bit1=0, value = 100 << 2 = 400 = 0x190
-    rk_100 = reinterpret(UInt8, [Int32(100 << 2 | 1)])
-    @test XLSReader.decode_rk(rk_100) == 100.0
-
-    # Integer 1 divided by 100: bits = (1<<2)|3 = 7
-    rk_001 = reinterpret(UInt8, [Int32(1 << 2 | 3)])
-    @test XLSReader.decode_rk(rk_001) ≈ 0.01
-
-    # Float 1.0: IEEE 754 double 0x3FF0000000000000
-    # Top 32 bits: 0x3FF00000, clear bottom 2 bits: 0x3FF00000
-    # RK = 0x3FF00000 | 0 (float, no mul100)
-    rk_float1 = [0x00, 0x00, 0xF0, 0x3F]
-    @test XLSReader.decode_rk(rk_float1) == 1.0
+    # 4.2 according to python xlrd (xlrd=pyimport("xlrd");xlrd.sheet.unpack_RK
+    @test 4.2 == XLSReader.decode_rk(UInt8[0x01, 0x40, 0x7a, 0x40])
 end
 
 @testset "date formats" begin
@@ -95,7 +84,7 @@ end
     @test data[12, 1].type == XL_CELL_DATE
     @test data[12, 1].value == Date(1969, 7, 31)
     @test data[12, 2].type == XL_CELL_NUMBER
-    @test data[12, 2].value ≈ 2.7216392e8 rtol = 1e-6
+    @test data[12, 2].value ≈ 400.74 rtol = 1e-6
     @test data[12, 3].type == XL_CELL_NUMBER
     @test data[12, 3].value ≈ 1.1138 rtol = 1e-6
 
@@ -105,7 +94,7 @@ end
 
     # Last data row (row 497)
     @test data[497, 1].value == Date(2009, 12, 31)
-    @test data[497, 2].value ≈ 2.71584064e8 rtol = 1e-6
+    @test data[497, 2].value ≈ 82.82 rtol = 1e-6
     @test data[497, 3].value ≈ 0.8969 rtol = 1e-6
 
     # Blank cells
@@ -120,6 +109,7 @@ end
 end
 
 include("test_readxlsheet.jl")
+include("test-xlrd-comp.jl")
 
 @testset "Code quality" begin
     Aqua.test_all(XLSReader)

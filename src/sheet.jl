@@ -163,13 +163,13 @@ function parse_sheet(stream::Vector{UInt8}, wb::WorkbookGlobals, name::String)
             _put_cell!(sheet, row0, col0, cell)
 
         elseif opcode == XL_MULRK
-            # Row(2) + FirstCol(2) + [XF(2)+RK(4)]... + LastCol(2)
             reclen >= 6 || continue
             row0 = Int(UInt16(data[1]) | (UInt16(data[2]) << 8))
             first_col = Int(UInt16(data[3]) | (UInt16(data[4]) << 8))
             last_col = Int(UInt16(data[reclen - 1]) | (UInt16(data[reclen]) << 8))
             col = first_col
             dpos = 5   # start of first XF+RK pair (1-based in data)
+
             while col <= last_col && dpos + 5 <= reclen
                 xf = Int(UInt16(data[dpos]) | (UInt16(data[dpos + 1]) << 8))
                 val = decode_rk(@view data[(dpos + 2):(dpos + 5)])

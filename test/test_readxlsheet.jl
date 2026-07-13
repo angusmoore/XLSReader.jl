@@ -15,7 +15,7 @@ const FORECAST_TESTDATA = joinpath(@__DIR__, "testdata", "forecast-date-by-event
     @test names(df)[3] == "FXRUSD"
 
     # First data row corresponds to sheet row 12
-    @test df[1, "FXRJY"] ≈ 2.7216392e8 rtol = 1e-6
+    @test df[1, "FXRJY"] ≈ 400.74 rtol = 1e-6
     @test df[1, "FXRUSD"] ≈ 1.1138 rtol = 1e-6
 
     # Index-based access returns the same result
@@ -40,6 +40,10 @@ end
     @test df_gdp isa DataFrame
     @test nrow(df_gdp) == 158
     @test ncol(df_gdp) == 141
+    @test df_gdp[7,2] ≈ 0.90 rtol = 1e-6    
+    @test df_gdp[15,2] ≈ 1.00 rtol = 1e-6    
+    @test df_gdp[17,12] ≈ 0.90 rtol = 1e-6    
+    @test df_gdp[27,12] ≈ 0.80 rtol = 1e-6    
 
     # Index-based access for GDP sheet (sheet 2)
     df_by_index = readxlsheet(FORECAST_TESTDATA, 2)

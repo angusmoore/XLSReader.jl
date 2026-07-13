@@ -47,25 +47,39 @@ function format_is_date(format_code::Int, format_str::String)
 end
 
 # Decode an RK value (4-byte packed number used in RK and MULRK records).
-# Bit 0: 0=float, 1=integer
-# Bit 1: 0=as-is, 1=divide by 100
+# First bit: 0=as-is, 1=divide by 100
+# Second bit: 0=float, 1=signed integer
+# https://learn.microsoft.com/en-us/openspecs/office_file_formats/ms-xls/04fa5340-122f-49db-93ea-00cc75501efc
 function decode_rk(rk_bytes::AbstractVector{UInt8})
-    u = UInt32(rk_bytes[1]) |
-        (UInt32(rk_bytes[2]) << 8) |
-        (UInt32(rk_bytes[3]) << 16) |
-        (UInt32(rk_bytes[4]) << 24)
-    rk = reinterpret(Int32, u)
-    mul100 = (rk & 2) != 0
-    is_int = (rk & 1) != 0
-    if is_int
-        val = Float64(rk >> 2)   # arithmetic right shift preserves sign
+    flags = rk_bytes[1]
+
+    val = if flags & 2 != 0 # Second bit set as 1
+        # Signed integer
+        u = UInt32(rk_bytes[1]) |
+            (UInt32(rk_bytes[2]) << 8) |
+            (UInt32(rk_bytes[3]) << 16) |
+            (UInt32(rk_bytes[4]) << 24)
+        rk = reinterpret(Int32, u)
+        rk >> 2 # Drop two flag bits
     else
-        # Top 30 bits of rk become top 30 bits of the 64-bit IEEE 754 double.
-        # Clear bottom 2 bits then place in upper 32 bits of Int64.
-        i64 = Int64(rk & Int32(-4)) << 32   # -4 == 0xFFFFFFFC as Int32
-        val = reinterpret(Float64, i64)
+        # Float
+        # It's the most significant 30 bits of an IEEE 754 64-bit FP number
+        # First extract the 30 bits
+        # This is not little endian b/c it's the 30 literal bits (I think?)
+        u = UInt32(rk_bytes[1] & 0xFC) | # Zeros out the flag bits 
+            (UInt32(rk_bytes[2]) << 8) |
+            (UInt32(rk_bytes[3]) << 16) |
+            (UInt32(rk_bytes[4]) << 24)
+        u = UInt64(u) << 32
+        reinterpret(Float64, u)
     end
-    return mul100 ? val / 100.0 : val
+
+    if flags & 1 != 0
+        # First flag bit set, divide by 100
+        return val / 100.0
+    else
+        return Float64(val)
+    end
 end
 
 # Convert an Excel serial date number to a Julia DateTime.
